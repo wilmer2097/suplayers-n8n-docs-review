@@ -15,3 +15,7 @@ En Settings > Pages > Build and deployment, desactivar la fuente de publicación
 ## Alcance
 
 35 casos de respuesta y catálogo técnico, con ejemplos parciales simulados. La guía documenta decisiones; no es un workflow importable ni sustituye validaciones del backend.
+
+## Actualización del checkout — 22/10/2026
+
+Ver [Tarjeta guardada y tarjeta nueva](TARJETA_GUARDADA.md): selección del método, mapeo de `usar_tarjeta_guardada`, registro antes del cargo y recuperación de pagos exitosos con aplicación fallida. Frontend Empresa actualizado en FlutterFlow; prueba integrada con n8n/Culqi test pendiente.
