@@ -1,6 +1,6 @@
 # Tarjeta guardada y tarjeta nueva en el checkout
 
-Actualizado: 22 de octubre de 2026. Alcance: frontend Empresa e integración con n8n.
+Actualizado: 26 de octubre de 2026. Alcance: frontend Empresa e integración con n8n.
 
 ## Qué cambia en el frontend
 
@@ -51,12 +51,68 @@ Son fragmentos del webhook; se conservan identidad verificada, entidad, plan, pe
 3. Respetar accion: un cambio programado o registro de método no autoriza un cargo inmediato.
 4. Para cobrar, exigir status:true, autorizar_cargo:true y reserva vigente. Conservar durablemente cqt_id y procesamiento_id originales.
 5. Con tarjeta guardada, usar la referencia autorizada devuelta por la reserva.
-6. Con tarjeta nueva autorizada para guardar o renovar, reutilizar el Customer existente cuando corresponda, crear/verificar Card y ejecutar sp_pago_metodo_registrar antes del cargo.
+6. Con tarjeta nueva autorizada para guardar o renovar, reutilizar el Customer existente cuando corresponda, crear o actualizar/verificar Card y ejecutar sp_pago_metodo_registrar antes del cargo.
 7. Si el registro del método falla, detenerse antes de cobrar.
 8. Verificar el cargo en Culqi y llamar a sp_pago_resultado.
 9. Comprobar por separado estado_pago y estado_aplicacion.
 
 Para tarjeta nueva sin guardar ni renovar, mantener el camino de cargo único con token y sin método persistente.
+
+
+## Actualizar una tarjeta existente en Culqi
+
+La API distingue actualizar el objeto Card existente de crear otro Card bajo el mismo cliente.
+
+Para actualizar:
+
+```http
+PATCH https://api.culqi.com/v2/cards/crd_test_TARJETA_ACTUAL
+Content-Type: application/json
+Authorization: Bearer CLAVE_PRIVADA_SOLO_BACKEND
+```
+
+```json
+{
+  "token_id": "tkn_test_TOKEN_NUEVO"
+}
+```
+
+El ID de la tarjeta existente se usa en la URL; no se envía el número completo ni el CVV anterior. El token nuevo lo genera el formulario seguro de Culqi.
+
+Referencia oficial: [Actualizar tarjeta](https://apidocs.culqi.com/#tag/Tarjetas/operation/actualizar-tarjeta).
+
+### Respuesta de la primera función para n8n
+
+En una reserva nueva autorizada, la compra de addons ahora también devuelve la referencia existente, aunque el usuario elija otra tarjeta. La rama de planes ya la entregaba:
+
+```json
+{
+  "cliente_registrado": true,
+  "tarjeta_vinculada": true,
+  "culqi_customer_id": "cus_test_CLIENTE_EXISTENTE",
+  "culqi_card_id": "crd_test_TARJETA_ACTUAL",
+  "usar_tarjeta_guardada": false
+}
+```
+
+Es un ejemplo parcial ficticio. Si no hay referencias registradas, pueden ser null. No confundir customer_id/card_id del intento con culqi_customer_id/culqi_card_id de ruteo. No enviar estas referencias privilegiadas al navegador.
+
+**usar_tarjeta_guardada:false continúa significando que el usuario eligió una tarjeta nueva. Devolver culqi_card_id no autoriza cobrar la tarjeta anterior.**
+
+### Orden al actualizar con un token nuevo
+
+1. Validar comprador y crear la reserva; conservar sus identificadores.
+2. Reutilizar culqi_customer_id; no crear otro cliente porque cambió la tarjeta.
+3. Si se eligió actualizar el Card existente, usar culqi_card_id en PATCH y el token nuevo como token_id.
+4. Verificar la respuesta de Culqi y que el Card pertenece al cliente esperado.
+5. Registrar el método actualizado con sp_pago_metodo_registrar, el cqt_id/procesamiento_id original y los datos verificados de marca y últimos cuatro, antes del cargo.
+6. Detenerse si el registro falla. Si pasa y la reserva sigue autorizada/vigente, cobrar con el método actualizado y registrar el resultado.
+
+Crear otro Card bajo el mismo Customer sigue siendo una alternativa; esa creación no necesita la tarjeta anterior. El registro local mantiene una tarjeta vinculada por operador, no una lista de métodos.
+
+PATCH modifica un objeto que puede usarse en otros cobros. Coordinar la actualización para evitar modificarlo durante otro cargo pendiente. Un timeout de PATCH requiere consultar su resultado antes de repetir el paso o reutilizar el token.
+
+Verificación de este ajuste: definición aplicada y comprobada en Supabase; sin cargos ni actualización real de tarjetas en Culqi. Pendiente prueba integrada n8n/Culqi test.
 
 ## Pago exitoso pero plan no aplicado
 
