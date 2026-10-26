@@ -14,8 +14,12 @@ En Settings > Pages > Build and deployment, desactivar la fuente de publicación
 
 ## Alcance
 
-35 casos de respuesta y catálogo técnico, con ejemplos parciales simulados. La guía documenta decisiones; no es un workflow importable ni sustituye validaciones del backend.
+37 casos de respuesta y catálogo técnico, con ejemplos parciales simulados. La guía documenta decisiones; no es un workflow importable ni sustituye validaciones del backend.
 
 ## Actualización del checkout — 22/10/2026
 
 Ver [Tarjeta guardada y tarjeta nueva](TARJETA_GUARDADA.md): selección del método, mapeo de `usar_tarjeta_guardada`, registro antes del cargo y recuperación de pagos exitosos con aplicación fallida. Frontend Empresa actualizado en FlutterFlow; prueba integrada con n8n/Culqi test pendiente.
+
+## Lectura de la guía
+
+Cada función muestra qué enviar, de dónde sale cada parámetro, un ejemplo, la respuesta y el siguiente paso en lenguaje sencillo. Las condiciones de IF/Switch siguen disponibles como detalle desplegable. Renovaciones y Notificaciones tienen pestañas separadas; los avisos corresponden a 5, 3, 2 y 1 días.
