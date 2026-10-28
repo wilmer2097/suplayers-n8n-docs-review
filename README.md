@@ -14,7 +14,7 @@ En Settings > Pages > Build and deployment, desactivar la fuente de publicación
 
 ## Alcance
 
-37 casos de respuesta y catálogo técnico, con ejemplos parciales simulados. La guía documenta decisiones; no es un workflow importable ni sustituye validaciones del backend.
+47 casos de respuesta y catálogo técnico, con ejemplos parciales simulados. La guía documenta decisiones; no es un workflow importable ni sustituye validaciones del backend.
 
 ## Actualización del checkout — 22/10/2026
 
@@ -23,3 +23,7 @@ Ver [Tarjeta guardada y tarjeta nueva](TARJETA_GUARDADA.md): selección del mét
 ## Lectura de la guía
 
 Cada función muestra qué enviar, de dónde sale cada parámetro, un ejemplo, la respuesta y el siguiente paso en lenguaje sencillo. Las condiciones de IF/Switch siguen disponibles como detalle desplegable. Renovaciones y Notificaciones tienen pestañas separadas; los avisos corresponden a 5, 3, 2 y 1 días.
+
+## Cambio de método de pago — 28/10/2026
+
+Nueva pestaña [Cambiar método de pago](https://wilmer2097.github.io/suplayers-n8n-docs-review/#tarjeta_inicio), con diez escenarios interactivos. Incluye preparación, actualización verificada, confirmación, consultas, rechazos y recuperación ante timeout. Ver [API, parámetros y cuerpos completos](cambio-metodo-pago.md). Este flujo no cobra ni cambia el plan o sus fechas; la prueba integral con Culqi test sigue pendiente.
